@@ -92,13 +92,6 @@ function init() {
   animate();
 }
 
-var site = 'viewer.html';
-
-function createModelUrl(url) {
-  var encoded = encodeURIComponent(url);
-  return site + '?url=' + encoded;
-}
-
 function hasParam(key) {
   var url = new URL(window.location.href);
   return url.searchParams.has(key);
