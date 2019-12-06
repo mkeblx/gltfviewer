@@ -261,7 +261,7 @@ function setupRender() {
   container.appendChild( renderer.domElement );
 
 
-  controls = new THREE.OrbitControls( camera );
+  controls = new THREE.OrbitControls( camera, renderer.domElement );
   controls.target.set( 0, 0, 0 );
   controls.update();
 
