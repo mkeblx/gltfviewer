@@ -66,7 +66,7 @@ canvas {
 </head>
 <body>
 <div id="info">
-  <h1>AR Model Viewer</h1>
+  <h1>glTF Viewer</h1>
   <div id="stat">status</div>
 </div>
 <div id="buttons">
@@ -75,8 +75,7 @@ canvas {
 </div>
 <div id="container"></div>
 
-<script src="js/three.min.js"></script>
-<script src="js/three.ar.min.js"></script>
+<script src="js/three.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/GLTFLoader.js"></script>
 <script>
@@ -143,7 +142,6 @@ function setupButtons() {
 
 function enterAR() {
   console.log('enter AR');
-  THREE.ARUtils.getARDisplay().then(initAR);
 }
 
 function initAR(display) {
