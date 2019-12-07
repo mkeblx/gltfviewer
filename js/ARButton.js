@@ -137,7 +137,9 @@ THREE.ARButton = {
 
 				}
 
-			} );
+			} ).catch( function ( error ) {
+				console.log(error);
+			});
 
 			return button;
 
