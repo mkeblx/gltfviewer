@@ -139,6 +139,7 @@ THREE.ARButton = {
 
 			} ).catch( function ( error ) {
 				console.log(error);
+				showXRNotFound();
 			});
 
 			return button;
