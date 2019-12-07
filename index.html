@@ -78,6 +78,7 @@ canvas {
 <script src="js/three.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/GLTFLoader.js"></script>
+<script src="js/ARButton.js"></script>
 <script>
 'use strict';
 
@@ -256,6 +257,7 @@ function setupRender() {
   renderer = new THREE.WebGLRenderer({
     antialias: false
   });
+  renderer.vr.enabled = true;
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
@@ -267,6 +269,7 @@ function setupRender() {
 
   window.addEventListener( 'resize', onWindowResize, false );
 
+  document.body.appendChild( THREE.ARButton.createButton( renderer ) );
 
   var polarGridHelper = new THREE.PolarGridHelper( 3, 16, 8, 64, 0xffffff, 0x808080 );
   scene.add( polarGridHelper );
