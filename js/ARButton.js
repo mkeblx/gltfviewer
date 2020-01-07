@@ -7,7 +7,7 @@ THREE.ARButton = {
 
 	createButton: function ( renderer ) {
 
-		function showEnterXR( /*device*/ ) {
+		function showStartAR( /*device*/ ) {
 
 			var currentSession = null;
 
@@ -21,8 +21,8 @@ THREE.ARButton = {
 				} );
 				*/
 
-				renderer.vr.setReferenceSpaceType( 'local' );
-				renderer.vr.setSession( session );
+				renderer.xr.setReferenceSpaceType( 'local' );
+				renderer.xr.setSession( session );
 				button.textContent = 'STOP AR';
 
 				currentSession = session;
@@ -33,7 +33,6 @@ THREE.ARButton = {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				renderer.vr.setSession( null );
 				button.textContent = 'START AR';
 
 				currentSession = null;
@@ -93,11 +92,11 @@ THREE.ARButton = {
 
 		}
 
-		function showXRNotFound() {
+		function showARNotSupported() {
 
 			disableButton();
 
-			button.textContent = 'XR NOT FOUND';
+			button.textContent = 'AR NOT SUPPORTED';
 
 		}
 
@@ -127,27 +126,16 @@ THREE.ARButton = {
 
 			navigator.xr.isSessionSupported( 'immersive-ar' ).then( function ( supported ) {
 
-				if ( supported ) {
+				supported ? showStartAR() : showARNotSupported();
 
-					showEnterXR();
-
-				} else {
-
-					showXRNotFound();
-
-				}
-
-			} ).catch( function ( error ) {
-				console.log(error);
-				showXRNotFound();
-			});
+			} ).catch( showARNotSupported );
 
 			return button;
 
 		} else {
 
 			var message = document.createElement( 'a' );
-			message.href = 'https://immersive-web.github.io/webxr/';
+			message.href = 'https://immersiveweb.dev/';
 
 			if ( window.isSecureContext === false ) {
 
