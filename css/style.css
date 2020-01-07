@@ -37,6 +37,7 @@ body {
   width: 100px;
   margin-bottom: 3px;
   text-align: center;
+  user-select: none;
 }
 .button:hover {
   cursor: pointer;
@@ -44,11 +45,17 @@ body {
 .button.selected {
   background-color: #aaa;
 }
+
 #enter-ar {
 
 }
 #enter-vr {
 
+}
+
+#sample-select {
+  margin-top: 6px;
+  min-width: 100px;
 }
 
 canvas {
