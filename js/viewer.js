@@ -18,6 +18,9 @@ function init() {
   var _url = window.location.href;
 
   setupUI();
+  setupButtons();
+  setupRender();
+  animate();
 
   if (!hasParam('url')) {
     stat.textContent = 'No URL parameter';
@@ -30,11 +33,15 @@ function init() {
 
   stat.textContent = url;
 
-  setupButtons();
+  loadModel(url);
+}
 
-  setupRender();
-
-  animate();
+function loadModel(url) {
+  // clear
+  if (model) {
+    scene.remove(model);
+    model = null;
+  }
 
   if (is_glTFUrl(url)) {
     load_glTF(url);
@@ -51,7 +58,10 @@ function setupUI() {
   var select = document.getElementById('sample-select');
   select.addEventListener('change', function(e){
     var val = event.target.value;
-    window.location.href = window.location.origin + '/?url=' + val;
+    if (!val)
+      return;
+    loadModel(val);
+    window.history.pushState('', '', window.location.origin +  '?url=' + val);
   });
 }
 
@@ -142,7 +152,7 @@ function load_glTF(url) {
         model = gltf.scene;
       }
       console.log(gltf);
-      scene.add( gltf.scene );
+      scene.add( model );
     } );
 
 }
