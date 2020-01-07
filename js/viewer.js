@@ -17,6 +17,8 @@ var vrDisplay;
 function init() {
   var _url = window.location.href;
 
+  setupUI();
+
   if (!hasParam('url')) {
     stat.textContent = 'No URL parameter';
     return;
@@ -43,6 +45,14 @@ function init() {
   } else {
     console.log('unsupported');
   }
+}
+
+function setupUI() {
+  var select = document.getElementById('sample-select');
+  select.addEventListener('change', function(e){
+    var val = event.target.value;
+    window.location.href = window.location.origin + '/?url=' + val;
+  });
 }
 
 function setupButtons() {
