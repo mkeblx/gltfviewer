@@ -1,0 +1,22 @@
+{
+  "name": "gltfviewer",
+  "version": "0.1.0",
+  "description": "gltf model viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkeblx/gltfviewer.git"
+  },
+  "keywords": [
+    "gltf"
+  ],
+  "author": "mkeblx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mkeblx/gltfviewer/issues"
+  },
+  "homepage": "https://github.com/mkeblx/gltfviewer#readme"
+}
