@@ -17,6 +17,10 @@ app.get('/js/three.js', function(req, res) {
   res.sendFile(__dirname + '/node_modules/three/build/three.js');
 });
 
+app.get('/js/GLTFLoader.js', function(req, res) {
+  res.sendFile(__dirname + '/node_modules/three/examples/js/loaders/GLTFLoader.js');
+});
+
 function isLocalhost(ip) {
   return (ip == 'localhost' || ip == '0.0.0.0' || ip == '::1');
 }
