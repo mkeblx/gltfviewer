@@ -36,12 +36,15 @@ function init() {
   loadModel(url);
 }
 
-function loadModel(url) {
-  // clear
+function resetModel() {
   if (model) {
     scene.remove(model);
     model = null;
   }
+}
+
+function loadModel(url) {
+  resetModel();
 
   if (is_glTFUrl(url)) {
     load_glTF(url);
@@ -58,8 +61,11 @@ function setupUI() {
   var select = document.getElementById('sample-select');
   select.addEventListener('change', function(e){
     var val = event.target.value;
-    if (!val)
+    if (!val) {
+      resetModel();
+      window.history.pushState('', '', window.location.origin);
       return;
+    }
     loadModel(val);
     window.history.pushState('', '', window.location.origin +  '?url=' + val);
   });
