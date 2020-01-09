@@ -63,11 +63,11 @@ function setupUI() {
     var val = event.target.value;
     if (!val) {
       resetModel();
-      window.history.pushState('', '', window.location.origin);
+      window.history.replaceState('', '', window.location.origin);
       return;
     }
     loadModel(val);
-    window.history.pushState('', '', window.location.origin +  '?url=' + val);
+    window.history.replaceState('', '', window.location.origin +  '?url=' + val);
   });
 }
 
