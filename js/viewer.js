@@ -201,7 +201,7 @@ function setupRender() {
   renderer = new THREE.WebGLRenderer({
     antialias: false
   });
-  renderer.vr.enabled = true;
+  renderer.xr.enabled = true;
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
