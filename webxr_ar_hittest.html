@@ -1,167 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>hit test</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-		<link type="text/css" rel="stylesheet" href="main.css">
-	</head>
-	<body>
+  <head>
+    <title>hit test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
 
-		<div id="info">
-			Enable chrome://flags/#webxr-ar-module<br/>
-			Enable chrome://flags/#webxr-hit-test<br/>
-			(Chrome 80+)
-		</div>
+  <div id="info">
+    Enable chrome://flags/#webxr-ar-module<br/>
+    Enable chrome://flags/#webxr-hit-test<br/>
+    (Chrome 80+)
+  </div>
 
 <script src="js/three.js"></script>
 <script src="js/GLTFLoader.js"></script>
 <script src="js/ARButton.js"></script>
 
 <script>
-	var container;
-	var camera, scene, renderer;
-	var controller;
+var container;
+var camera, scene, renderer;
+var controller;
 
-	var matrix, ray, reticle;
+var matrix, ray, reticle;
 
-	var loader = new THREE.GLTFLoader();
+var loader = new THREE.GLTFLoader();
 
-	init();
-	animate();
+init();
+animate();
 
-	function init() {
+function init() {
+  container = document.createElement('div');
+  document.body.appendChild(container);
 
-		container = document.createElement( 'div' );
-		document.body.appendChild( container );
+  scene = new THREE.Scene();
 
-		scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
-		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+  var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  light.position.set(0.5, 1, 0.25);
+  scene.add(light);
 
-		var light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
-		light.position.set( 0.5, 1, 0.25 );
-		scene.add( light );
+  //
 
-		//
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  container.appendChild(renderer.domElement);
 
-		renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-		renderer.setPixelRatio( window.devicePixelRatio );
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.xr.enabled = true;
-		container.appendChild( renderer.domElement );
+  //
 
-		//
+  document.body.appendChild(THREE.ARButton.createButton(renderer));
 
-		document.body.appendChild( THREE.ARButton.createButton( renderer ) );
+  //
 
-		//
+  function onSelect() {
+    if (reticle.visible) {
+      addObject();
+    }
+  }
 
-		function onSelect() {
+  controller = renderer.xr.getController(0);
+  controller.addEventListener('select', onSelect);
+  scene.add(controller);
 
-			if ( reticle.visible ) {
-				addObject();
-			}
+  matrix = new THREE.Matrix4();
 
-		}
+  ray = new THREE.Ray();
 
-		controller = renderer.xr.getController( 0 );
-		controller.addEventListener( 'select', onSelect );
-		scene.add( controller );
+  reticle = new THREE.Mesh(
+    new THREE.RingBufferGeometry( 0.05, 0.1, 32 ).rotateX( - Math.PI / 2 ),
+    new THREE.MeshBasicMaterial()
+  );
+  reticle.matrixAutoUpdate = false;
+  reticle.visible = false;
+  scene.add( reticle );
 
-		matrix = new THREE.Matrix4();
+  //
+  window.addEventListener( 'resize', onWindowResize, false );
+}
 
-		ray = new THREE.Ray();
+function getObject() {
+  var geometry = new THREE.CylinderBufferGeometry( 0.05, 0.05, 0.2, 32 ).translate( 0, 0.1, 0 );
+  var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+  var mesh = new THREE.Mesh( geometry, material );
+  return mesh;
+}
 
-		reticle = new THREE.Mesh(
-			new THREE.RingBufferGeometry( 0.05, 0.1, 32 ).rotateX( - Math.PI / 2 ),
-			new THREE.MeshBasicMaterial()
-		);
-		reticle.matrixAutoUpdate = false;
-		reticle.visible = false;
-		scene.add( reticle );
+function addObject() {
+  var mesh = getObject();
+  mesh.position.setFromMatrixPosition( reticle.matrix );
+  //mesh.scale.y = Math.random() * 2 + 1;
+  scene.add( mesh );
+}
 
-		//
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
 
-		window.addEventListener( 'resize', onWindowResize, false );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
-	}
+//
 
-	function getObject() {
-		var geometry = new THREE.CylinderBufferGeometry( 0.05, 0.05, 0.2, 32 ).translate( 0, 0.1, 0 );
-		var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-		var mesh = new THREE.Mesh( geometry, material );
-		return mesh;
-	}
+function animate() {
+  renderer.setAnimationLoop( render );
+}
 
-	function addObject() {
-		var mesh = getObject();
-		mesh.position.setFromMatrixPosition( reticle.matrix );
-		//mesh.scale.y = Math.random() * 2 + 1;
-		scene.add( mesh );
-	}
+function render( timestamp, frame ) {
+  if ( frame ) {
+    var referenceSpace = renderer.xr.getReferenceSpace();
+    var session = renderer.xr.getSession();
+    var pose = frame.getViewerPose(referenceSpace);
 
-	function onWindowResize() {
+    if (pose) {
+      matrix.fromArray(pose.transform.matrix);
 
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
+      ray.origin.set( 0, 0, 0 );
+      ray.direction.set( 0, 0, - 1 );
+      ray.applyMatrix4( matrix );
 
-		renderer.setSize( window.innerWidth, window.innerHeight );
+      var xrRay = new XRRay(ray.origin, ray.direction);
 
-	}
+      session.requestHitTest(xrRay, referenceSpace)
+        .then(function(results) {
+          if (results.length) {
+            var hitResult = results[ 0 ];
 
-	//
+            reticle.visible = true;
+            reticle.matrix.fromArray( hitResult.hitMatrix );
+          } else {
+            reticle.visible = false;
+          }
+        });
+    }
+  }
 
-	function animate() {
-
-		renderer.setAnimationLoop( render );
-
-	}
-
-	function render( timestamp, frame ) {
-
-		if ( frame ) {
-
-			var referenceSpace = renderer.xr.getReferenceSpace();
-			var session = renderer.xr.getSession();
-			var pose = frame.getViewerPose( referenceSpace );
-
-			if ( pose ) {
-
-				matrix.fromArray( pose.transform.matrix );
-
-				ray.origin.set( 0, 0, 0 );
-				ray.direction.set( 0, 0, - 1 );
-				ray.applyMatrix4( matrix );
-
-				var xrRay = new XRRay( ray.origin, ray.direction );
-
-				session.requestHitTest( xrRay, referenceSpace )
-					.then( function ( results ) {
-
-						if ( results.length ) {
-
-							var hitResult = results[ 0 ];
-
-							reticle.visible = true;
-							reticle.matrix.fromArray( hitResult.hitMatrix );
-
-						} else {
-
-							reticle.visible = false;
-
-						}
-
-					} );
-
-			}
-
-		}
-
-		renderer.render( scene, camera );
-
-	}
-
+  renderer.render( scene, camera );
+}
 </script>
 </body>
 </html>

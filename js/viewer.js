@@ -145,22 +145,15 @@ function load_glTF(url) {
   console.log('Load glTF model');
 
   var loader = new THREE.GLTFLoader();
-  loader.load( url, function ( gltf ) {
-      gltf.scene.traverse( function ( child ) {
-        /*if ( child.isMesh ) {
-          child.material.envMap = envMap;
-        }*/
-      } );
-      // special case for planets: remove later
-      if (gltf.scene.children.length > 1 && gltf.scene.children[1].name === 'Orbit') {
-        model = gltf.scene.children[1];
-      } else {
-        model = gltf.scene;
-      }
-      console.log(gltf);
-      scene.add( model );
+  loader.load(url, function(gltf) {
+    gltf.scene.traverse(function(child) {
+      /*if ( child.isMesh ) {
+        child.material.envMap = envMap;
+      }*/
     } );
-
+    model = gltf.scene;
+    scene.add(model);
+  });
 }
 
 function isPolyUrl(url) {
@@ -179,54 +172,54 @@ function loadPoly(id) {
 }
 
 function setupRender() {
-  container = document.getElementById( 'container' );
+  container = document.getElementById('container');
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x303030 );
-  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100 );
+  scene.background = new THREE.Color(0x303030);
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 
   camera.position.z = 5;
   camera.position.y = 3;
 
-  var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+  var light = new THREE.AmbientLight(0x404040); // soft white light
   scene.add( light );
 
-  light = new THREE.HemisphereLight( 0xbbbbff, 0x444422 );
-  light.position.set( 0, 1, 0 );
+  light = new THREE.HemisphereLight(0xbbbbff, 0x444422);
+  light.position.set(0, 1, 0);
   scene.add( light );
-  light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( -10, 6, 10 );
+  light = new THREE.DirectionalLight(0xffffff);
+  light.position.set(-10, 6, 10);
   scene.add( light );
 
   renderer = new THREE.WebGLRenderer({
     antialias: false
   });
   renderer.xr.enabled = true;
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  container.appendChild( renderer.domElement );
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
 
 
-  controls = new THREE.OrbitControls( camera, renderer.domElement );
-  controls.target.set( 0, 0, 0 );
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 0);
   controls.update();
 
-  window.addEventListener( 'resize', onWindowResize, false );
+  window.addEventListener('resize', onWindowResize, false);
 
-  document.body.appendChild( THREE.ARButton.createButton( renderer ) );
+  document.body.appendChild(THREE.ARButton.createButton(renderer));
 
-  var polarGridHelper = new THREE.PolarGridHelper( 3, 16, 8, 64, 0xffffff, 0x808080 );
-  scene.add( polarGridHelper );
+  var polarGridHelper = new THREE.PolarGridHelper(3, 16, 8, 64, 0xffffff, 0x808080);
+  scene.add(polarGridHelper);
 }
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function animate(t) {
-  window.requestAnimationFrame( animate );
+  window.requestAnimationFrame(animate);
 
   update(t);
   render(t);
@@ -238,7 +231,7 @@ function update(t) {
 }
 
 function render(t) {
-  renderer.render( scene, camera );
+  renderer.render(scene, camera);
 }
 
 init();
