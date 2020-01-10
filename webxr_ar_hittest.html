@@ -15,6 +15,7 @@
 		</div>
 
 <script src="js/three.js"></script>
+<script src="js/GLTFLoader.js"></script>
 <script src="js/ARButton.js"></script>
 
 <script>
@@ -23,6 +24,8 @@
 	var controller;
 
 	var matrix, ray, reticle;
+
+	var loader = new THREE.GLTFLoader();
 
 	init();
 	animate();
@@ -54,18 +57,10 @@
 
 		//
 
-		var geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
-
 		function onSelect() {
 
 			if ( reticle.visible ) {
-
-				var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-				var mesh = new THREE.Mesh( geometry, material );
-				mesh.position.setFromMatrixPosition( reticle.matrix );
-				mesh.scale.y = Math.random() * 2 + 1;
-				scene.add( mesh );
-
+				addObject();
 			}
 
 		}
@@ -90,6 +85,20 @@
 
 		window.addEventListener( 'resize', onWindowResize, false );
 
+	}
+
+	function getObject() {
+		var geometry = new THREE.CylinderBufferGeometry( 0.1, 0.1, 0.2, 32 ).translate( 0, 0.1, 0 );
+		var material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+		var mesh = new THREE.Mesh( geometry, material );
+		return mesh;
+	}
+
+	function addObject() {
+		var mesh = getObject();
+		mesh.position.setFromMatrixPosition( reticle.matrix );
+		//mesh.scale.y = Math.random() * 2 + 1;
+		scene.add( mesh );
 	}
 
 	function onWindowResize() {
