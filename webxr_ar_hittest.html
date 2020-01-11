@@ -93,12 +93,13 @@ function getObject() {
 }
 
 function addObject() {
-  //var mesh = getObject();
-
-  if (!model)
-    return;
-
-  var mesh = model;
+  var mesh;
+  if (!model) {
+    mesh = getObject();
+  } else {
+    mesh = model;
+    mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.1;
+  }
 
   mesh.position.setFromMatrixPosition( reticle.matrix );
   //mesh.scale.y = Math.random() * 2 + 1;
