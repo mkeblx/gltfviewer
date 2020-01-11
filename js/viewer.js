@@ -10,6 +10,7 @@ var container;
 
 var controls;
 
+var loader;
 var model;
 
 var vrDisplay;
@@ -21,6 +22,8 @@ function init() {
   setupButtons();
   setupRender();
   animate();
+
+  loader = new THREE.GLTFLoader();
 
   if (!hasParam('url')) {
     stat.textContent = 'No URL parameter';
@@ -144,7 +147,6 @@ function is_glTFUrl(url) {
 function load_glTF(url) {
   console.log('Load glTF model');
 
-  var loader = new THREE.GLTFLoader();
   loader.load(url, function(gltf) {
     gltf.scene.traverse(function(child) {
       /*if ( child.isMesh ) {

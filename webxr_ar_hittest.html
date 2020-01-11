@@ -26,6 +26,7 @@ var controller;
 var matrix, ray, reticle;
 
 var loader = new THREE.GLTFLoader();
+var model;
 
 init();
 animate();
@@ -78,6 +79,8 @@ function init() {
   reticle.visible = false;
   scene.add( reticle );
 
+  load_glTF('samples/BoxTextured.glb');
+
   //
   window.addEventListener( 'resize', onWindowResize, false );
 }
@@ -90,11 +93,31 @@ function getObject() {
 }
 
 function addObject() {
-  var mesh = getObject();
+  //var mesh = getObject();
+
+  if (!model)
+    return;
+
+  var mesh = model;
+
   mesh.position.setFromMatrixPosition( reticle.matrix );
   //mesh.scale.y = Math.random() * 2 + 1;
   scene.add( mesh );
 }
+
+function load_glTF(url) {
+  console.log('Load glTF model: ' + url);
+
+  loader.load(url, function(gltf) {
+    gltf.scene.traverse(function(child) {
+      /*if ( child.isMesh ) {
+        child.material.envMap = envMap;
+      }*/
+    } );
+    model = gltf.scene;
+  });
+}
+
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
