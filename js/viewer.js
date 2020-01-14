@@ -154,8 +154,18 @@ function load_glTF(url) {
       }*/
     } );
     model = gltf.scene;
+
+    placeModelOnOriginPlane();
+
     scene.add(model);
   });
+}
+
+function placeModelOnOriginPlane() {
+  var box = new THREE.Box3();
+  box.expandByObject(model);
+  var lowestY = box.min.y;
+  model.position.set(0, -lowestY, 0);
 }
 
 function isPolyUrl(url) {
