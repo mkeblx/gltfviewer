@@ -8,6 +8,7 @@ var matrix, ray, reticle;
 
 var loader = new THREE.GLTFLoader();
 var model;
+var modelContainer = new THREE.Group();
 
 init();
 animate();
@@ -54,6 +55,8 @@ function init() {
   reticle.visible = false;
   scene.add(reticle);
 
+  scene.add(modelContainer);
+
   load_glTF('samples/BoxTextured.glb');
 
   //
@@ -76,9 +79,8 @@ function addObject() {
     mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.1;
   }
 
-  mesh.position.setFromMatrixPosition(reticle.matrix);
-  //mesh.scale.y = Math.random() * 2 + 1;
-  scene.add(mesh);
+  modelContainer.position.setFromMatrixPosition(reticle.matrix);
+  modelContainer.add(mesh);
 }
 
 function load_glTF(url) {
@@ -91,9 +93,17 @@ function load_glTF(url) {
       }*/
     } );
     model = gltf.scene;
+
+    placeModelOnOriginPlane(model, model);
   });
 }
 
+function placeModelOnOriginPlane(model, transformObject) {
+  var box = new THREE.Box3();
+  box.expandByObject(model);
+  var lowestY = box.min.y;
+  transformObject.position.set(0, -lowestY, 0);
+}
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;

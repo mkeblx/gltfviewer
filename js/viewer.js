@@ -12,8 +12,10 @@ var controls;
 
 var loader;
 var model;
+var modelContainer = new THREE.Group();
 
-var vrDisplay;
+// flags
+var alignToGround = true;
 
 function init() {
   var _url = window.location.href;
@@ -41,7 +43,7 @@ function init() {
 
 function resetModel() {
   if (model) {
-    scene.remove(model);
+    modelContainer.remove(model);
     model = null;
   }
 }
@@ -99,9 +101,6 @@ function initAR(display) {
     console.log('no AR display');
     return;
   }
-
-  vrDisplay = display;
-  console.log(display);
 }
 
 function enterVR() {
@@ -145,7 +144,7 @@ function is_glTFUrl(url) {
 
 // load glTF .glb
 function load_glTF(url) {
-  console.log('Load glTF model');
+  console.log('Load glTF model: ' + url);
 
   loader.load(url, function(gltf) {
     gltf.scene.traverse(function(child) {
@@ -155,17 +154,19 @@ function load_glTF(url) {
     } );
     model = gltf.scene;
 
-    placeModelOnOriginPlane();
+    if (alignToGround) {
+      placeModelOnOriginPlane(model, modelContainer);
+    }
 
-    scene.add(model);
+    modelContainer.add(model);
   });
 }
 
-function placeModelOnOriginPlane() {
+function placeModelOnOriginPlane(model, transformObject) {
   var box = new THREE.Box3();
   box.expandByObject(model);
   var lowestY = box.min.y;
-  model.position.set(0, -lowestY, 0);
+  transformObject.position.set(0, -lowestY, 0);
 }
 
 function isPolyUrl(url) {
@@ -222,6 +223,8 @@ function setupRender() {
 
   var polarGridHelper = new THREE.PolarGridHelper(3, 16, 8, 64, 0xffffff, 0x808080);
   scene.add(polarGridHelper);
+
+  scene.add(modelContainer);
 }
 
 function onWindowResize() {
@@ -238,8 +241,7 @@ function animate(t) {
 }
 
 function update(t) {
-  if (model)
-    model.rotation.y += 0.003;
+  modelContainer.rotation.y += 0.003;
 }
 
 function render(t) {
