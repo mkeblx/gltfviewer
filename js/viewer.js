@@ -16,6 +16,7 @@ var modelContainer = new THREE.Group();
 
 // flags
 var alignToGround = true;
+var autoRotate = true;
 
 function init() {
   var _url = window.location.href;
@@ -241,7 +242,9 @@ function animate(t) {
 }
 
 function update(t) {
-  modelContainer.rotation.y += 0.003;
+  if (autoRotate) {
+    modelContainer.rotation.y += 0.003;
+  }
 }
 
 function render(t) {
