@@ -120,7 +120,7 @@ function animate() {
   renderer.setAnimationLoop(render);
 }
 
-async function render(timestamp, frame) {
+function render(timestamp, frame) {
   if (frame) {
     var referenceSpace = renderer.xr.getReferenceSpace();
     var session = renderer.xr.getSession();
@@ -135,15 +135,17 @@ async function render(timestamp, frame) {
 
       var xrRay = new XRRay(ray.origin, ray.direction);
 
-      var results = await session.requestHitTest(xrRay, referenceSpace);
-      if (results.length) {
-        var hitResult = results[0];
+      session.requestHitTest(xrRay, referenceSpace)
+        .then(function(results) {
+          if (results.length) {
+            var hitResult = results[0];
 
-        reticle.visible = true;
-        reticle.matrix.fromArray(hitResult.hitMatrix);
-      } else {
-        reticle.visible = false;
-      }
+            reticle.visible = true;
+            reticle.matrix.fromArray(hitResult.hitMatrix);
+          } else {
+            reticle.visible = false;
+          }
+        });
     }
   }
 
