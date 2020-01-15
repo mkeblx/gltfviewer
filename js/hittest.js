@@ -76,7 +76,6 @@ function addObject() {
     mesh = getObject();
   } else {
     mesh = model;
-    mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.1;
   }
 
   modelContainer.position.setFromMatrixPosition(reticle.matrix);
@@ -93,6 +92,10 @@ function load_glTF(url) {
       }*/
     } );
     model = gltf.scene;
+
+    // TODO: calc dynamically to fit
+    let s = 0.1;
+    model.scale.set(s, s, s);
 
     placeModelOnOriginPlane(model, model);
   });
