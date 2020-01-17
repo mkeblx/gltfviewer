@@ -93,12 +93,21 @@ function load_glTF(url) {
     } );
     model = gltf.scene;
 
-    // TODO: calc dynamically to fit
-    let s = 0.1;
-    model.scale.set(s, s, s);
+    scaleModelToFit(model, 0.1);
 
     placeModelOnOriginPlane(model, model);
   });
+}
+
+// TODO: make more robust
+function scaleModelToFit(model, targetDimension) {
+  var box = new THREE.Box3();
+  box.expandByObject(model);
+  var hSize = Math.abs(box.min.y - box.max.y);
+  console.log(hSize);
+  let s = targetDimension / hSize;
+  console.log(s);
+  model.scale.set(s, s, s);
 }
 
 function placeModelOnOriginPlane(model, transformObject) {

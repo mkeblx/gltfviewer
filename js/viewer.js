@@ -155,12 +155,25 @@ function load_glTF(url) {
     } );
     model = gltf.scene;
 
+    scaleModelToFit(model, 1);
+
     if (alignToGround) {
       placeModelOnOriginPlane(model, modelContainer);
     }
 
     modelContainer.add(model);
   });
+}
+
+// TODO: make more robust
+function scaleModelToFit(model, targetDimension) {
+  var box = new THREE.Box3();
+  box.expandByObject(model);
+  var hSize = Math.abs(box.min.y - box.max.y);
+  console.log(hSize);
+  let s = targetDimension / hSize;
+  console.log(s);
+  model.scale.set(s, s, s);
 }
 
 function placeModelOnOriginPlane(model, transformObject) {
