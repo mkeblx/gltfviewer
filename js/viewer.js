@@ -15,8 +15,13 @@ var model;
 var modelContainer = new THREE.Group();
 
 // flags
+var autoScale = true;
 var alignToGround = true;
 var autoRotate = true;
+
+var targetSize = 1; // m
+
+//
 
 function init() {
   var _url = window.location.href;
@@ -155,7 +160,9 @@ function load_glTF(url) {
     } );
     model = gltf.scene;
 
-    scaleModelToFit(model, 1);
+    if (autoScale) {
+      scaleModelToFit(model, targetSize);
+    }
 
     if (alignToGround) {
       placeModelOnOriginPlane(model, modelContainer);
