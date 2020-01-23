@@ -14,6 +14,12 @@ var loader;
 var model;
 var modelContainer = new THREE.Group();
 
+// animation
+var mixer;
+var clips;
+
+var clock = new THREE.Clock(true);
+
 // flags
 var autoScale = true;
 var alignToGround = true;
@@ -32,6 +38,7 @@ function init() {
   animate();
 
   loader = new THREE.GLTFLoader();
+  mixer = new THREE.AnimationMixer();
   loader.setCrossOrigin('anonymous');
 
   if (!hasParam('url')) {
@@ -160,6 +167,8 @@ function load_glTF(url) {
       }*/
     } );
     model = gltf.scene;
+    clips = gltf.animations || [];
+    console.log(clips);
 
     if (autoScale) {
       scaleModelToFit(model, targetSize);
@@ -258,17 +267,23 @@ function onWindowResize() {
 function animate(t) {
   window.requestAnimationFrame(animate);
 
-  update(t);
-  render(t);
+  var dt = clock.getDelta();
+
+  update(t, dt);
+  render();
 }
 
-function update(t) {
+function update(t, dt) {
   if (autoRotate) {
     modelContainer.rotation.y += 0.003;
   }
+
+  if (model && mixer) {
+    mixer.update(dt);
+  }
 }
 
-function render(t) {
+function render() {
   renderer.render(scene, camera);
 }
 
