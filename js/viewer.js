@@ -32,6 +32,7 @@ function init() {
   animate();
 
   loader = new THREE.GLTFLoader();
+  loader.setCrossOrigin('anonymous');
 
   if (!hasParam('url')) {
     stat.textContent = 'No URL parameter';
