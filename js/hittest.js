@@ -129,7 +129,7 @@ function animate() {
   renderer.setAnimationLoop(render);
 }
 
-function render(timestamp, frame) {
+async function render(timestamp, frame) {
   if (frame) {
     var referenceSpace = renderer.xr.getReferenceSpace();
     var session = renderer.xr.getSession();
@@ -144,17 +144,15 @@ function render(timestamp, frame) {
 
       var xrRay = new XRRay(ray.origin, ray.direction);
 
-      session.requestHitTest(xrRay, referenceSpace)
-        .then(function(results) {
-          if (results.length) {
-            var hitResult = results[0];
+      let results = await session.requestHitTest(xrRay, referenceSpace);
+      if (results.length) {
+        var hitResult = results[0];
 
-            reticle.visible = true;
-            reticle.matrix.fromArray(hitResult.hitMatrix);
-          } else {
-            reticle.visible = false;
-          }
-        });
+        reticle.visible = true;
+        reticle.matrix.fromArray(hitResult.hitMatrix);
+      } else {
+        reticle.visible = false;
+      }
     }
   }
 
