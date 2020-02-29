@@ -219,7 +219,7 @@ function setupRender() {
   container = document.getElementById('container');
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x303030);
+  scene.background = new THREE.Color(0x505050);
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 
   camera.position.z = 5;
