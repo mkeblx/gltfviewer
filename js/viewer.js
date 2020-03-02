@@ -23,6 +23,7 @@ var clock = new THREE.Clock(true);
 // flags
 var autoScale = true;
 var alignToGround = true;
+var alignAxis = true;
 var autoRotate = true;
 
 var targetSize = 1; // m
@@ -178,6 +179,10 @@ function load_glTF(url) {
       placeModelOnOriginPlane(model, modelContainer);
     }
 
+    if (alignAxis) {
+      centerAxis(model, modelContainer);
+    }
+
     modelContainer.add(model);
   });
 }
@@ -198,6 +203,13 @@ function placeModelOnOriginPlane(model, transformObject) {
   box.expandByObject(model);
   var lowestY = box.min.y;
   transformObject.position.set(0, -lowestY, 0);
+}
+
+function centerAxis(model, transformObject) {
+  var box = new THREE.Box3();
+  box.expandByObject(model);
+  var dx = box.max.x - box.min.x;
+  var dz = box.max.z - box.min.z;
 }
 
 function isPolyUrl(url) {
