@@ -1,10 +1,14 @@
 const { src, dest } = require('gulp');
 
-function defaultTask() {
-  src('node_modules/three/build/three.js')
-    .pipe(dest('js'));
-  return src('node_modules/three/examples/js/loaders/GLTFLoader.js')
-    .pipe(dest('js'));
+var files = [
+  'three/build/three.js',
+  'three/examples/js/loaders/GLTFLoader.js'];
+
+function defaultTask(cb) {
+  files.forEach(file => {
+    return src('node_modules/'+file).pipe(dest('js'))
+  });
+  cb();
 }
 
 exports.default = defaultTask;

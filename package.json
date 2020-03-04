@@ -4,7 +4,7 @@
   "description": "gltf model viewer",
   "main": "index.js",
   "scripts": {
-    "serve": "node serve.js",
+    "postinstall": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/mkeblx/gltfviewer#readme",
   "dependencies": {
-    "express": "^4.17.1",
     "gulp": "^4.0.2",
     "three": "^0.114.0"
   }
