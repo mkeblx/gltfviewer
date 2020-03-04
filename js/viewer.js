@@ -171,6 +171,8 @@ function load_glTF(url) {
     clips = gltf.animations || [];
     console.log(clips);
 
+    modelContainer.add(model);
+
     if (autoScale) {
       scaleModelToFit(model, targetSize);
     }
@@ -182,8 +184,6 @@ function load_glTF(url) {
     if (alignAxis) {
       centerAxis(model, modelContainer);
     }
-
-    modelContainer.add(model);
   });
 }
 
@@ -202,7 +202,7 @@ function placeModelOnOriginPlane(model, transformObject) {
   var box = new THREE.Box3();
   box.expandByObject(model);
   var lowestY = box.min.y;
-  transformObject.position.set(0, -lowestY, 0);
+  transformObject.position.y = -lowestY;
 }
 
 function centerAxis(model, transformObject) {
@@ -210,6 +210,8 @@ function centerAxis(model, transformObject) {
   box.expandByObject(model);
   var dx = box.max.x - box.min.x;
   var dz = box.max.z - box.min.z;
+  console.log(dx);
+  console.log(dz);
 }
 
 function isPolyUrl(url) {
