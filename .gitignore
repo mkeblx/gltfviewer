@@ -1,5 +1,9 @@
 node_modules
 *.tmp
+
+# node_modules imports
 three.js
 GLTFLoader.js
+OrbitControls.js
+
 TODO.txt
