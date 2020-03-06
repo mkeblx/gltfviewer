@@ -7,7 +7,7 @@ var files = [
 
 function defaultTask(cb) {
   files.forEach(file => {
-    return src('node_modules/'+file).pipe(dest('js'))
+    return src('node_modules/'+file).pipe(dest('js/lib'))
   });
   cb();
 }
