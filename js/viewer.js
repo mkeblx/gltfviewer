@@ -171,8 +171,6 @@ function load_glTF(url) {
     clips = gltf.animations || [];
     console.log(clips);
 
-    modelContainer.add(model);
-
     if (autoScale) {
       scaleModelToFit(model, targetSize);
     }
@@ -184,6 +182,8 @@ function load_glTF(url) {
     if (alignAxis) {
       centerAxis(model, modelContainer);
     }
+
+    modelContainer.add(model);
   });
 }
 
