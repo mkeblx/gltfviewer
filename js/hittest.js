@@ -4,11 +4,14 @@ var container;
 var camera, scene, renderer;
 var controller;
 
-var matrix, ray, reticle;
+var reticle;
 
 var loader = new THREE.GLTFLoader();
 var model;
 var modelContainer = new THREE.Group();
+
+var hitTestSource;
+var hitTestSourceRequested = false;
 
 init();
 animate();
@@ -31,7 +34,9 @@ function init() {
   renderer.xr.enabled = true;
   container.appendChild(renderer.domElement);
 
-  document.body.appendChild(THREE.ARButton.createButton(renderer));
+  document.body.appendChild(THREE.ARButton.createButton(renderer, {requiredFeatures: ['hit-test']}));
+
+  var geometry = new THREE.CylinderBufferGeometry(0.1, 0.1, 0.2, 32).translate(0, 0.1, 0);
 
   function onSelect() {
     if (reticle.visible) {
@@ -42,10 +47,6 @@ function init() {
   controller = renderer.xr.getController(0);
   controller.addEventListener('select', onSelect);
   scene.add(controller);
-
-  matrix = new THREE.Matrix4();
-
-  ray = new THREE.Ray();
 
   reticle = new THREE.Mesh(
     new THREE.RingBufferGeometry(0.05, 0.1, 32).rotateX(- Math.PI / 2),
@@ -59,8 +60,22 @@ function init() {
 
   load_glTF('samples/BoxTextured.glb');
 
-  //
   window.addEventListener('resize', onWindowResize, false);
+}
+
+function load_glTF(url) {
+  console.log('Load glTF model: ' + url);
+
+  loader.load(url, function(gltf) {
+    gltf.scene.traverse(function(child) {
+      /*if ( child.isMesh ) {
+        child.material.envMap = envMap;
+      }*/
+    } );
+    model = gltf.scene;
+
+    scaleModelToFit(model, 0.1);
+  });
 }
 
 function getObject() {
@@ -82,24 +97,6 @@ function addObject() {
   modelContainer.add(mesh);
 }
 
-function load_glTF(url) {
-  console.log('Load glTF model: ' + url);
-
-  loader.load(url, function(gltf) {
-    gltf.scene.traverse(function(child) {
-      /*if ( child.isMesh ) {
-        child.material.envMap = envMap;
-      }*/
-    } );
-    model = gltf.scene;
-
-    scaleModelToFit(model, 0.1);
-
-    placeModelOnOriginPlane(model, model);
-  });
-}
-
-// TODO: make more robust
 function scaleModelToFit(model, targetDimension) {
   var box = new THREE.Box3();
   box.expandByObject(model);
@@ -110,13 +107,6 @@ function scaleModelToFit(model, targetDimension) {
   model.scale.set(s, s, s);
 }
 
-function placeModelOnOriginPlane(model, transformObject) {
-  var box = new THREE.Box3();
-  box.expandByObject(model);
-  var lowestY = box.min.y;
-  transformObject.position.set(0, -lowestY, 0);
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -124,32 +114,37 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+//
 
 function animate() {
   renderer.setAnimationLoop(render);
 }
 
-async function render(timestamp, frame) {
+function render(timestamp, frame) {
+
   if (frame) {
     var referenceSpace = renderer.xr.getReferenceSpace();
     var session = renderer.xr.getSession();
-    var pose = frame.getViewerPose(referenceSpace);
 
-    if (pose) {
-      matrix.fromArray(pose.transform.matrix);
+    if (hitTestSourceRequested === false) {
+      session.requestReferenceSpace('viewer').then(function(referenceSpace) {
+        session.requestHitTestSource({space: referenceSpace}).then(function(source) {
+          hitTestSource = source;
+        } );
+      } );
 
-      ray.origin.set(0, 0, 0);
-      ray.direction.set(0, 0, - 1);
-      ray.applyMatrix4(matrix);
+      hitTestSourceRequested = true;
+    }
 
-      var xrRay = new XRRay(ray.origin, ray.direction);
+    if (hitTestSource) {
+      var hitTestResults = frame.getHitTestResults(hitTestSource);
 
-      let results = await session.requestHitTest(xrRay, referenceSpace);
-      if (results.length) {
-        var hitResult = results[0];
+      if (hitTestResults.length) {
+        var hit = hitTestResults[ 0 ];
 
         reticle.visible = true;
-        reticle.matrix.fromArray(hitResult.hitMatrix);
+        reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+
       } else {
         reticle.visible = false;
       }
@@ -158,3 +153,4 @@ async function render(timestamp, frame) {
 
   renderer.render(scene, camera);
 }
+
