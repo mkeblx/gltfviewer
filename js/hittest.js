@@ -13,6 +13,11 @@ var modelContainer = new THREE.Group();
 var hitTestSource;
 var hitTestSourceRequested = false;
 
+
+// settings
+var scaleReticle = false; // scale based on hit test distance
+
+
 init();
 animate();
 
@@ -107,6 +112,12 @@ function scaleModelToFit(model, targetDimension) {
   model.scale.set(s, s, s);
 }
 
+function getHitTestLength(hit, space) {
+  var length = 1;
+  var matrix = hit.getPose(referenceSpace).transform.matrix;
+  return length;
+}
+
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -140,10 +151,16 @@ function render(timestamp, frame) {
       var hitTestResults = frame.getHitTestResults(hitTestSource);
 
       if (hitTestResults.length) {
-        var hit = hitTestResults[ 0 ];
+        var hit = hitTestResults[0];
 
         reticle.visible = true;
         reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+
+        if (scaleReticle) {
+          var len = getHitLength(hit, referenceSpace);
+          var s = len * Math.pow(1, len);
+          reticle.scale.set(sc, sc, s);
+        }
 
       } else {
         reticle.visible = false;
