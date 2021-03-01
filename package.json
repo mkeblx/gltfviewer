@@ -22,6 +22,6 @@
   "homepage": "https://github.com/mkeblx/gltfviewer#readme",
   "dependencies": {
     "gulp": "^4.0.2",
-    "three": "^0.114.0"
+    "three": "^0.125.0"
   }
 }
